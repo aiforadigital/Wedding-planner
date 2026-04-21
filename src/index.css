@@ -1,22 +1,225 @@
 @tailwind base;
+
 @tailwind components;
+
 @tailwind utilities;
 
-@layer base {
-  html {
-    font-family: Inter, system-ui, sans-serif;
-  }
+
+
+/* Ivory Silk — ivoor/champagne/taupe (geen roze accenten; namen zijn legacy uit het component‑model) */
+
+:root,
+
+[data-theme='ivory_silk'] {
+
+  --taupe-primary: #958b82;
+
+  --taupe-deep: #5c524a;
+
+  --cream-bg: #f9f7f2;
+
+  --ivory-card: #fdfbf7;
+
+  --dusty-rose: #aea396;
+
+  --muted-rose: var(--taupe-deep);
+
+  --soft-blush: #e8dfd4;
+
+  --sage: #b5b8a8;
+
+  --burgundy: #6e5c50;
+
+  --accent: var(--muted-rose);
+
 }
 
-/* Print-friendly layout for PDF / browser print */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  .print-break {
-    break-inside: avoid;
-  }
-  body {
-    background: white !important;
-  }
+
+
+[data-theme='white_linen'] {
+
+  --taupe-primary: #9a8b72;
+
+  --taupe-deep: #6b6048;
+
+  --cream-bg: #faf8f4;
+
+  --ivory-card: #fefdfb;
+
+  --dusty-rose: #c4a050;
+
+  --muted-rose: #b8944a;
+
+  --soft-blush: #efe6d8;
+
+  --sage: #ada68c;
+
+  --burgundy: #9a6848;
+
+  --accent: var(--muted-rose);
+
 }
+
+
+
+[data-theme='sky_silk'] {
+
+  --taupe-primary: #8a98a8;
+
+  --taupe-deep: #5c6670;
+
+  --cream-bg: #f2f6f9;
+
+  --ivory-card: #fbfcfe;
+
+  --dusty-rose: #95b4c9;
+
+  --muted-rose: #7a9aae;
+
+  --soft-blush: #dce8f0;
+
+  --sage: #a3b8c4;
+
+  --burgundy: #7a6280;
+
+  --accent: var(--muted-rose);
+
+}
+
+
+
+[data-theme='linen_ledger'] {
+
+  --taupe-primary: #7a7068;
+
+  --taupe-deep: #4a423c;
+
+  --cream-bg: #eae8e4;
+
+  --ivory-card: #fdfcfb;
+
+  --dusty-rose: #a89890;
+
+  --muted-rose: #8c7d74;
+
+  --soft-blush: #ddd9d4;
+
+  --sage: #9d968e;
+
+  --burgundy: #7a5248;
+
+  --accent: var(--muted-rose);
+
+}
+
+
+
+[data-theme='rose_veil'] {
+
+  --taupe-primary: #b89692;
+
+  --taupe-deep: #7a5e59;
+
+  --cream-bg: #f7f0ee;
+
+  --ivory-card: #fefbf9;
+
+  --dusty-rose: #d4a5a5;
+
+  --muted-rose: #c4948e;
+
+  --soft-blush: #f0e4e2;
+
+  --sage: #c4b8b0;
+
+  --burgundy: #9a6060;
+
+  --accent: var(--muted-rose);
+
+}
+
+
+
+[data-theme='woodland_sage'] {
+
+  --taupe-primary: #9ba897;
+
+  --taupe-deep: #5e6658;
+
+  --cream-bg: #eef1ec;
+
+  --ivory-card: #fcfdfb;
+
+  --dusty-rose: #a8b5a3;
+
+  --muted-rose: #8fa394;
+
+  --soft-blush: #e4ede5;
+
+  --sage: #b5c4b0;
+
+  --burgundy: #8b6a5a;
+
+  --accent: var(--muted-rose);
+
+}
+
+
+
+@layer base {
+
+  html {
+
+    font-family: Inter, system-ui, sans-serif;
+
+    background: var(--cream-bg);
+
+    color: var(--taupe-deep);
+
+  }
+
+}
+
+
+
+.font-script {
+
+  font-family: 'Dancing Script', cursive;
+
+}
+
+
+
+.font-display {
+
+  font-family: 'Cormorant Garamond', Georgia, serif;
+
+}
+
+
+
+.label-cap {
+
+  font-size: 0.68rem;
+
+  letter-spacing: 0.22em;
+
+  text-transform: uppercase;
+
+  opacity: 0.75;
+
+}
+
+
+
+
+@media print {
+
+  .no-print {
+
+    display: none !important;
+
+  }
+
+}
+

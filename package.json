@@ -1,13 +1,14 @@
 {
-  "name": "aifora-wedding-planner",
+  "name": "wedding-budget-planner",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "demo:serve": "npx --yes serve demo -l 5789"
+    "build:demo": "vite build && node scripts/sync-demo-planner.mjs",
+    "build:standalone": "vite build && node scripts/sync-demo-planner.mjs && node scripts/build-standalone-html.mjs",
+    "preview": "vite preview"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
