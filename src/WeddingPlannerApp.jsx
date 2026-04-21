@@ -28,7 +28,15 @@ import {
   Mail,
   X,
 } from 'lucide-react';
-import { TAB_ORDER, t } from './i18n.js';
+import {
+  TAB_ORDER,
+  t,
+  partyRoleLabel,
+  tableTypeLabel,
+  payTypeLabel,
+  guestRsvpOptLabel,
+  catStatusLabel,
+} from './i18n.js';
 import {
   STORAGE_KEY,
   THEMES,
@@ -39,6 +47,7 @@ import {
   TABLE_TYPES,
   PARTY_ROLES,
   mergePhotoSectionsFromPersist,
+  migrateBudgetLabelsFromLegacy,
   newWeekendEvent,
   migrateWeekendEventsToPack,
   LEGACY_THEME_MAP,
@@ -193,16 +202,17 @@ const COLORS = ['#A08B7A', '#D4A5A5', '#B5B8A8', '#7A6B5C', '#B8847E', '#8B5A5A'
 function loadRaw() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createInitialState();
+    if (!raw) return createInitialState('nl');
     const p = JSON.parse(raw);
     return mergeWithDefaults(p);
   } catch {
-    return createInitialState();
+    return createInitialState('nl');
   }
 }
 
 function mergeWithDefaults(p) {
-  const d = createInitialState();
+  const lang = ['nl', 'en', 'fr'].includes(p.lang) ? p.lang : 'nl';
+  const d = createInitialState(lang);
   const hasWeekendPack =
     p.weekendPack &&
     typeof p.weekendPack === 'object' &&
@@ -217,15 +227,22 @@ function mergeWithDefaults(p) {
       }
     : migrateWeekendEventsToPack(p.weekendEvents);
 
+  let categories =
+    Array.isArray(p.categories) && p.categories.length ? p.categories : d.categories;
+  let paymentsList = Array.isArray(p.payments) ? p.payments : [];
+  const budgetMigrated = migrateBudgetLabelsFromLegacy(categories, paymentsList, lang);
+  categories = budgetMigrated.categories;
+  paymentsList = budgetMigrated.payments;
+
   return {
     ...d,
     ...p,
-    lang: ['nl', 'en', 'fr'].includes(p.lang) ? p.lang : 'nl',
+    lang,
     themeId: normalizeThemeId(p.themeId),
     textDir: p.textDir === 'rtl' ? 'rtl' : 'ltr',
     planningTone: ['formal', 'casual', 'playful'].includes(p.planningTone) ? p.planningTone : 'casual',
-    categories: Array.isArray(p.categories) && p.categories.length ? p.categories : d.categories,
-    payments: Array.isArray(p.payments) ? p.payments : [],
+    categories,
+    payments: paymentsList,
     vendors: Array.isArray(p.vendors) ? p.vendors : [],
     decisionGroups: Array.isArray(p.decisionGroups) ? p.decisionGroups : [],
     guests: Array.isArray(p.guests) ? p.guests : [],
@@ -402,7 +419,6 @@ function GuestRsvpScreen({
 export default function WeddingPlannerApp() {
   const [state, setState] = useState(loadRaw);
   const [tab, setTab] = useState('welcome');
-
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -639,7 +655,7 @@ export default function WeddingPlannerApp() {
                 'linear-gradient(180deg, rgba(253, 251, 247, 0.98), rgba(245, 239, 230, 0.42))',
               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.75)',
             }}
-            aria-label="Tabs"
+            aria-label={tr('tabsAriaLabel')}
           >
             {TAB_ORDER.map((id) => (
               <button
@@ -781,7 +797,7 @@ export default function WeddingPlannerApp() {
                       key={th.id}
                       type="button"
                       aria-pressed={selected}
-                      className="relative overflow-hidden rounded-2xl border text-left ring-1 ring-black/5 transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                      className="relative overflow-hidden rounded-2xl border text-left ring-1 ring-black/5 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                       style={{
                         borderColor: selRing,
                         borderWidth: selected ? '2px' : '1px',
@@ -802,10 +818,7 @@ export default function WeddingPlannerApp() {
                           <Check className="h-4 w-4" strokeWidth={2.75} />
                         </span>
                       )}
-                      <div
-                        className="flex gap-2 border-b px-5 pb-4 pt-5"
-                        style={{ borderColor: 'rgba(122, 107, 92, 0.1)' }}
-                      >
+                      <div className="flex gap-2 border-b px-5 pb-4 pt-5" style={{ borderColor: 'rgba(122, 107, 92, 0.1)' }}>
                         {th.swatches.map((c, i) => (
                           <div
                             key={i}
@@ -981,6 +994,7 @@ export default function WeddingPlannerApp() {
             state={state}
             setState={setState}
             tr={tr}
+            lang={lang}
             cardStyle={cardStyle}
             btnPrimary={btnPrimary}
             welcomeInputStyle={welcomeInputStyle}
@@ -991,7 +1005,7 @@ export default function WeddingPlannerApp() {
         )}
 
         {tab === 'tables' && (
-          <TablesPanel state={state} setState={setState} tr={tr} cardStyle={cardStyle} btnPrimary={btnPrimary} />
+          <TablesPanel state={state} setState={setState} tr={tr} lang={lang} cardStyle={cardStyle} btnPrimary={btnPrimary} />
         )}
 
         {tab === 'party' && (
@@ -1022,7 +1036,7 @@ export default function WeddingPlannerApp() {
           <MilestonesPanel state={state} setState={setState} tr={tr} cardStyle={cardStyle} />
         )}
 
-        {tab === 'questions' && <QuestionsPanel tr={tr} lang={lang} cardStyle={cardStyle} />}
+        {tab === 'questions' && <QuestionsPanel tr={tr} cardStyle={cardStyle} />}
 
         {tab === 'guide' && (
           <section style={cardStyle} className="p-6">
@@ -1208,9 +1222,9 @@ function BudgetPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
                         });
                       }}
                     >
-                      <option value="on_track">On track</option>
-                      <option value="at_risk">At risk</option>
-                      <option value="over">Over</option>
+                      <option value="on_track">{catStatusLabel(lang, 'on_track')}</option>
+                      <option value="at_risk">{catStatusLabel(lang, 'at_risk')}</option>
+                      <option value="over">{catStatusLabel(lang, 'over')}</option>
                     </select>
                   </td>
                   <td className="py-1 pr-2">
@@ -1290,13 +1304,13 @@ function PaymentsPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
         <table className="w-full min-w-[960px] text-sm">
           <thead>
             <tr className="border-b text-left">
-              <th className="py-2">Date</th>
-              <th className="py-2">Vendor</th>
-              <th className="py-2">Category</th>
-              <th className="py-2">Amount</th>
-              <th className="py-2">Type</th>
-              <th className="py-2">Paid for</th>
-              <th className="py-2">Receipt</th>
+              <th className="py-2">{tr('payColDate')}</th>
+              <th className="py-2">{tr('payColVendor')}</th>
+              <th className="py-2">{tr('payColCategory')}</th>
+              <th className="py-2">{tr('payColAmount')}</th>
+              <th className="py-2">{tr('payColType')}</th>
+              <th className="py-2">{tr('payColPaidFor')}</th>
+              <th className="py-2">{tr('payColReceipt')}</th>
               <th className="py-2" />
             </tr>
           </thead>
@@ -1382,7 +1396,7 @@ function PaymentsPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
                   >
                     {PAYMENT_TYPES.map((x) => (
                       <option key={x} value={x}>
-                        {x}
+                        {payTypeLabel(lang, x)}
                       </option>
                     ))}
                   </select>
@@ -1457,7 +1471,7 @@ function VendorsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
                 ...s.vendors,
                 {
                   id: uid('ven'),
-                  category: 'Venue',
+                  category: '',
                   name: '',
                   contact: '',
                   email: '',
@@ -1479,7 +1493,7 @@ function VendorsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
           <div key={v.id} style={cardStyle} className="space-y-2 p-4">
             <input
               className="w-full rounded border px-2 py-1 font-medium"
-              placeholder="Category"
+              placeholder={tr('phVendorCategory')}
               value={v.category}
               onChange={(e) => {
                 const val = e.target.value;
@@ -1492,7 +1506,7 @@ function VendorsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
             />
             <input
               className="w-full rounded border px-2 py-1"
-              placeholder="Vendor name"
+              placeholder={tr('phVendorName')}
               value={v.name}
               onChange={(e) => {
                 const val = e.target.value;
@@ -1506,7 +1520,7 @@ function VendorsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
             <textarea
               className="w-full rounded border px-2 py-1 text-sm"
               rows={3}
-              placeholder="Notes"
+              placeholder={tr('phVendorNotes')}
               value={v.notes}
               onChange={(e) => {
                 const val = e.target.value;
@@ -1571,14 +1585,14 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
             }))
           }
         >
-          + Group
+          {tr('decisionsAddGroup')}
         </button>
       </div>
       {state.decisionGroups.map((g, gi) => (
         <div key={g.id} style={cardStyle} className="space-y-4 p-4">
           <input
             className="w-full max-w-md rounded border px-2 py-1"
-            placeholder="Category"
+            placeholder={tr('decisionsPhCategory')}
             value={g.category}
             onChange={(e) => {
               const val = e.target.value;
@@ -1591,7 +1605,7 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
           />
           <input
             className="w-full max-w-md rounded border px-2 py-1"
-            placeholder="Decision name"
+            placeholder={tr('decisionsPhTitle')}
             value={g.title}
             onChange={(e) => {
               const val = e.target.value;
@@ -1613,12 +1627,14 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
                 }}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold">Option {oi + 1}</span>
+                  <span className="text-xs font-semibold">
+                    {tr('decisionsOptionNumber').replace('{n}', String(oi + 1))}
+                  </span>
                   {o.picked && <Crown className="h-4 w-4 text-amber-600" />}
                 </div>
                 <input
                   className="mb-2 w-full rounded border px-2 py-1 text-sm"
-                  placeholder="Name"
+                  placeholder={tr('decisionsPhOptionName')}
                   value={o.name}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -1634,7 +1650,7 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
                 <input
                   type="number"
                   className="mb-2 w-full rounded border px-2 py-1 text-sm"
-                  placeholder="Price"
+                  placeholder={tr('decisionsPhPrice')}
                   value={o.price || ''}
                   onChange={(e) => {
                     const val = Number(e.target.value) || 0;
@@ -1663,7 +1679,7 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
                       });
                     }}
                   />
-                  Final choice
+                  {tr('decisionsFinalChoice')}
                 </label>
               </div>
             ))}
@@ -1678,7 +1694,7 @@ function DecisionsPanel({ state, setState, tr, cardStyle, btnPrimary }) {
               }))
             }
           >
-            {tr('remove')} group
+            {tr('decisionsRemoveGroup')}
           </button>
         </div>
       ))}
@@ -1691,6 +1707,7 @@ function GuestsPanel({
   state,
   setState,
   tr,
+  lang,
   cardStyle,
   btnPrimary,
   welcomeInputStyle,
@@ -1734,18 +1751,18 @@ function GuestsPanel({
             }))
           }
         >
-          <Plus className="mr-1 inline h-4 w-4" /> Guest
+          <Plus className="mr-1 inline h-4 w-4" /> {tr('guestsAddGuest')}
         </button>
       </div>
       <div style={cardStyle} className="overflow-x-auto p-4">
         <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr className="border-b text-left">
-              <th className="py-2">Name</th>
-              <th className="py-2">Side</th>
-              <th className="py-2">RSVP</th>
-              <th className="py-2">Meal</th>
-              <th className="py-2">Table</th>
+              <th className="py-2">{tr('guestsColName')}</th>
+              <th className="py-2">{tr('guestsColSide')}</th>
+              <th className="py-2">{tr('guestsColRsvp')}</th>
+              <th className="py-2">{tr('guestsColMeal')}</th>
+              <th className="py-2">{tr('guestsColTable')}</th>
               <th className="py-2" />
             </tr>
           </thead>
@@ -1779,8 +1796,8 @@ function GuestsPanel({
                       });
                     }}
                   >
-                    <option value="bride">Bride</option>
-                    <option value="groom">Groom</option>
+                    <option value="bride">{tr('guestSide_bride')}</option>
+                    <option value="groom">{tr('guestSide_groom')}</option>
                   </select>
                 </td>
                 <td className="py-1 pr-2">
@@ -1798,7 +1815,7 @@ function GuestsPanel({
                   >
                     {RSVP_OPTS.map((x) => (
                       <option key={x} value={x}>
-                        {x}
+                        {guestRsvpOptLabel(lang, x)}
                       </option>
                     ))}
                   </select>
@@ -1852,65 +1869,22 @@ function GuestsPanel({
       </div>
 
       <div
-        className="relative overflow-hidden rounded-3xl"
+        className="relative overflow-hidden rounded-3xl border border-black/10 shadow-xl"
         style={{
-          background: 'linear-gradient(155deg, rgba(232,223,212,0.55) 0%, rgba(253,251,247,0.95) 42%, rgba(245,239,230,0.7) 100%)',
-          boxShadow: '0 16px 48px rgba(63, 60, 55, 0.08)',
+          boxShadow: '0 20px 56px rgba(42, 38, 34, 0.12)',
+          background: 'var(--ivory-card)',
         }}
       >
-        <div
-          className="absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-25"
-          style={{ background: 'radial-gradient(circle, var(--taupe-primary) 0%, transparent 70%)' }}
-          aria-hidden
-        />
-        <div className="relative rounded-3xl border border-black/5 p-6 sm:p-9" style={{ background: 'var(--ivory-card)' }}>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
-            <div className="flex min-w-0 flex-1 gap-4">
-              <div
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-inner ring-1 ring-black/5"
-                style={{ background: 'linear-gradient(180deg, rgba(253,251,247,1), rgba(232,223,212,0.35))' }}
-              >
-                <Mail className="h-7 w-7" style={{ color: 'var(--taupe-deep)' }} aria-hidden />
-              </div>
-              <div className="min-w-0 max-w-2xl">
-                <p className="label-cap">{tr('guestsRsvpEyebrow')}</p>
-                <h2 className="font-script mt-2 text-4xl font-semibold leading-tight sm:text-5xl" style={{ color: 'var(--taupe-deep)' }}>
-                  {tr('guestsRsvpHero')}
-                </h2>
-                <p className="mt-3 text-sm leading-relaxed text-neutral-600">{tr('guestsRsvpLead')}</p>
-              </div>
-            </div>
-            <div className="flex w-full shrink-0 flex-col gap-2 sm:flex-row lg:max-w-md lg:flex-col xl:max-w-none xl:flex-row">
-              <button
-                type="button"
-                className="flex flex-1 items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5"
-                style={{ borderColor: 'var(--taupe-deep)', background: 'var(--taupe-deep)', color: '#fdfbf7' }}
-                onClick={openGuestRsvp}
-              >
-                <ExternalLink className="h-4 w-4 shrink-0" aria-hidden /> {tr('rsvpOpenLive')}
-              </button>
-              <button
-                type="button"
-                className="flex flex-1 items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
-                style={{ borderColor: 'rgba(122,107,92,0.22)', background: 'var(--ivory-card)', color: 'var(--taupe-deep)' }}
-                onClick={downloadRsvpHtmlFile}
-              >
-                <Download className="h-4 w-4 shrink-0" aria-hidden /> {tr('rsvpDownloadHtml')}
-              </button>
-              <button
-                type="button"
-                className="flex flex-1 items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
-                style={{ borderColor: 'var(--taupe-primary)', background: 'rgba(149,139,130,0.08)', color: 'var(--taupe-deep)' }}
-                onClick={copyRsvpInvite}
-              >
-                <Copy className="h-4 w-4 shrink-0" aria-hidden /> {tr('rsvpCopyInvite')}
-              </button>
-            </div>
+        {/* 1 — Instellingen eerst (licht): volgorde is expres omgekeerd t.o.v. vorige versie */}
+        <div className="relative px-6 py-8 sm:px-10 sm:py-10" style={{ background: 'var(--ivory-card)' }}>
+          <div className="mb-8 max-w-2xl border-l-[3px] pl-5" style={{ borderColor: 'var(--dusty-rose)' }}>
+            <p className="label-cap">{tr('settingsRsvpSection')}</p>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-600">{tr('settingsRsvpLead')}</p>
           </div>
 
-          <div className="mt-8 grid min-w-0 gap-4 sm:grid-cols-2">
+          <div className="grid min-w-0 gap-5 sm:grid-cols-2">
             <label
-              className="flex min-w-0 flex-col gap-2 rounded-2xl border px-4 py-3 sm:min-w-[min(100%,280px)]"
+              className="flex min-w-0 flex-col gap-2 rounded-2xl border px-4 py-4"
               style={{ borderColor: 'rgba(122,107,92,0.14)', background: 'rgba(245,239,230,0.45)' }}
             >
               <span className="label-cap break-words">{tr('rsvpDeadlineLabel')}</span>
@@ -1924,7 +1898,7 @@ function GuestsPanel({
               <span className="text-xs leading-snug text-neutral-500">{tr('rsvpDeadlineHint')}</span>
             </label>
             <label
-              className="flex min-w-0 flex-col gap-2 rounded-2xl border px-4 py-3 sm:min-w-[min(100%,280px)]"
+              className="flex min-w-0 flex-col gap-2 rounded-2xl border px-4 py-4"
               style={{ borderColor: 'rgba(122,107,92,0.14)', background: 'rgba(245,239,230,0.45)' }}
             >
               <span className="label-cap break-words">{tr('rsvpContactEmailLabel')}</span>
@@ -1932,7 +1906,7 @@ function GuestsPanel({
                 type="email"
                 className={`${fieldBase} min-h-[2.75rem] w-full min-w-0`}
                 style={welcomeInputStyle}
-                placeholder="naam@voorbeeld.nl"
+                placeholder={tr('rsvpEmailPlaceholder')}
                 value={state.rsvpContactEmail || ''}
                 onChange={(e) => setState((s) => ({ ...s, rsvpContactEmail: e.target.value }))}
               />
@@ -1940,21 +1914,21 @@ function GuestsPanel({
             </label>
           </div>
 
-          <div className="mt-8 grid gap-5 border-t pt-8 sm:grid-cols-2" style={{ borderColor: 'rgba(122,107,92,0.1)' }}>
-            <label className="flex flex-col gap-2 sm:col-span-2">
+          <div className="mt-8 grid gap-6">
+            <label className="flex flex-col gap-2">
               <span className="label-cap" style={{ color: 'var(--taupe-deep)' }}>
                 {tr('rsvpShareUrlLabel')}
               </span>
               <input
                 className={fieldBase}
                 style={welcomeInputStyle}
-                placeholder="https://…/planner.html#rsvp"
+                placeholder={tr('rsvpShareUrlPlaceholder')}
                 value={state.rsvpShareUrl || ''}
                 onChange={(e) => setState((s) => ({ ...s, rsvpShareUrl: e.target.value }))}
               />
               <span className="text-xs text-neutral-500">{tr('rsvpShareUrlHint')}</span>
             </label>
-            <label className="flex flex-col gap-2 sm:col-span-2">
+            <label className="flex flex-col gap-2">
               <span className="label-cap" style={{ color: 'var(--taupe-deep)' }}>
                 {tr('rsvpFormIntroLabel')}
               </span>
@@ -1969,12 +1943,98 @@ function GuestsPanel({
             </label>
           </div>
         </div>
+
+        {/* 2 — Daarna: donker blok alleen voor uitleg + acties (geen formulier meer hier) */}
+        <div
+          className="relative border-t border-white/10 px-6 pb-11 pt-10 sm:px-12 sm:pb-14 sm:pt-12"
+          style={{
+            background: `linear-gradient(
+              165deg,
+              var(--burgundy) -8%,
+              var(--taupe-deep) 48%,
+              var(--dusty-rose) 118%
+            )`,
+          }}
+        >
+          <div
+            className="pointer-events-none absolute -left-16 bottom-0 h-48 w-48 rounded-full opacity-[0.14]"
+            style={{ background: 'radial-gradient(circle, #fdfbf7 0%, transparent 65%)' }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl text-center">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[rgba(253,251,247,0.78)]">
+              {tr('guestsRsvpEyebrow')}
+            </p>
+            <h2 className="font-script mt-4 text-[2rem] font-semibold leading-tight text-[#fdfbf7] sm:text-4xl">
+              {tr('guestsRsvpHero')}
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-[rgba(253,251,247,0.88)]">
+              {tr('guestsRsvpLead')}
+            </p>
+            <div className="mx-auto mt-10 flex max-w-xl justify-center">
+              <div
+                className="flex h-14 w-14 items-center justify-center rounded-2xl border shadow-inner ring-1 ring-black/10"
+                style={{
+                  borderColor: 'rgba(253,251,247,0.35)',
+                  background: 'rgba(253,251,247,0.14)',
+                  color: 'var(--dusty-rose)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)',
+                }}
+              >
+                <Mail className="h-8 w-8" strokeWidth={1.75} style={{ color: 'var(--soft-blush)' }} aria-hidden />
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-2 rounded-2xl border px-4 py-4 text-center shadow-lg transition hover:-translate-y-0.5 sm:min-h-[5.25rem]"
+              style={{
+                borderColor: 'rgba(253,251,247,0.5)',
+                background: 'var(--dusty-rose)',
+                color: '#fdfbf7',
+                boxShadow: '0 8px 24px rgba(42, 38, 34, 0.35)',
+              }}
+              onClick={openGuestRsvp}
+            >
+              <ExternalLink className="h-5 w-5 shrink-0 opacity-95" aria-hidden />
+              <span className="text-sm font-semibold leading-snug">{tr('rsvpOpenLive')}</span>
+            </button>
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-2 rounded-2xl border px-4 py-4 text-center transition hover:-translate-y-0.5 sm:min-h-[5.25rem]"
+              style={{
+                borderColor: 'var(--dusty-rose)',
+                background: 'rgba(253,251,247,0.14)',
+                color: '#fdfbf7',
+              }}
+              onClick={downloadRsvpHtmlFile}
+            >
+              <Download className="h-5 w-5 shrink-0 opacity-95" aria-hidden />
+              <span className="text-sm font-semibold leading-snug">{tr('rsvpDownloadHtml')}</span>
+            </button>
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-2 rounded-2xl border px-4 py-4 text-center transition hover:-translate-y-0.5 sm:min-h-[5.25rem]"
+              style={{
+                borderColor: 'rgba(253,251,247,0.22)',
+                background: 'rgba(181, 184, 168, 0.22)',
+                color: '#fdfbf7',
+              }}
+              onClick={copyRsvpInvite}
+            >
+              <Copy className="h-5 w-5 shrink-0 opacity-95" aria-hidden />
+              <span className="text-sm font-semibold leading-snug">{tr('rsvpCopyInvite')}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function TablesPanel({ state, setState, tr, cardStyle, btnPrimary }) {
+function TablesPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
   return (
     <section className="space-y-4">
       <div className="flex justify-between">
@@ -1992,7 +2052,7 @@ function TablesPanel({ state, setState, tr, cardStyle, btnPrimary }) {
                 ...s.tables,
                 {
                   id: uid('tbl'),
-                  name: `Table ${s.tables.length + 1}`,
+                  name: tr('tablesNewTableName').replace('{n}', String(s.tables.length + 1)),
                   type: 'family',
                   capacity: 8,
                   guestIds: [],
@@ -2001,7 +2061,7 @@ function TablesPanel({ state, setState, tr, cardStyle, btnPrimary }) {
             }))
           }
         >
-          + Table
+          + {tr('tablesAddTable')}
         </button>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -2033,12 +2093,12 @@ function TablesPanel({ state, setState, tr, cardStyle, btnPrimary }) {
             >
               {TABLE_TYPES.map((x) => (
                 <option key={x} value={x}>
-                  {x}
+                  {tableTypeLabel(lang, x)}
                 </option>
               ))}
             </select>
             <p className="text-xs opacity-70">
-              Guest IDs (comma):{' '}
+              {tr('tablesGuestIdsHint')}{' '}
               <input
                 className="mt-1 w-full rounded border px-2 py-1 text-sm"
                 value={tb.guestIds.join(',')}
@@ -2179,7 +2239,7 @@ function PartyPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
                     >
                       {PARTY_ROLES.map((r) => (
                         <option key={r} value={r}>
-                          {r}
+                          {partyRoleLabel(lang, r)}
                         </option>
                       ))}
                     </select>
@@ -3134,7 +3194,7 @@ function WeekendPanel({ state, setState, tr, lang, cardStyle, btnPrimary }) {
                     className="rounded border px-2 py-1"
                     style={{ borderColor: 'rgba(122,107,92,0.35)' }}
                     value={ev.time || ''}
-                    placeholder="18:30"
+                    placeholder={tr('weekendTimePlaceholder')}
                     onChange={(e) => {
                       const v = e.target.value;
                       patchList((arr) => {
@@ -3352,7 +3412,7 @@ function SettingsPanel({ state, setState, tr, lang, cardStyle, btnPrimary, expor
           className="flex items-center gap-2 rounded-full border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-800 transition hover:-translate-y-0.5"
           onClick={() => {
             if (confirm(tr('confirmClear'))) {
-              setState(createInitialState());
+              setState(createInitialState(state.lang || 'nl'));
               setTab('welcome');
             }
           }}
@@ -3400,22 +3460,17 @@ function MilestonesPanel({ state, setState, tr, cardStyle }) {
   );
 }
 
-const VENUE_Q = [
-  'What is included in the rental?',
-  'What is the backup plan for weather?',
-  'What time can vendors access?',
-];
-
-function QuestionsPanel({ tr, lang, cardStyle }) {
+function QuestionsPanel({ tr, cardStyle }) {
+  const venueQs = ['venueQ1', 'venueQ2', 'venueQ3'];
   return (
     <section style={cardStyle} className="space-y-4 p-6">
       <h1 className="font-display text-3xl font-medium leading-tight tracking-tight sm:text-4xl" style={{ color: 'var(--taupe-deep)' }}>{tr('questionsTitle')}</h1>
       <p className="text-sm opacity-80">{tr('questionsIntro')}</p>
-      <h2 className="font-medium">Venue</h2>
+      <h2 className="font-medium">{tr('questionsVenueHeading')}</h2>
       <ul className="space-y-3">
-        {VENUE_Q.map((q, i) => (
+        {venueQs.map((key, i) => (
           <li key={i} className="text-sm">
-            <div className="opacity-90">{q}</div>
+            <div className="opacity-90">{tr(key)}</div>
             <textarea className="mt-1 w-full rounded border px-2 py-1" rows={2} placeholder={tr('answerPh')} />
           </li>
         ))}

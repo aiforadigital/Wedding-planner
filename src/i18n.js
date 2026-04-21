@@ -40,6 +40,8 @@ export const STRINGS = {
     currencyLabel: 'Valuta',
     langLabel: 'Taal',
     themeLabel: 'Kleurenthema',
+    welcomeContinueBtn: 'Verder',
+    welcomeThemesHint: 'De paletten hieronder verschijnen eerst neutraal; tik op Verder om ze in echte kleur te zien.',
 
     snapshotTitle: 'Overzicht',
     snapshotIntro: 'Jouw trouwdag-command center — plan met vertrouwen.',
@@ -129,6 +131,19 @@ export const STRINGS = {
     spentNote: 'Uitgegeven wordt uit Betalingen gevuld en is hier niet te wijzigen.',
     addCategory: '+ Categorie toevoegen',
     addPayment: '+ Betaling toevoegen',
+
+    budgetCatVenueCatering: 'Locatie & catering',
+    budgetCatPhotoVideo: 'Foto & video',
+    budgetCatDesignFlorals: 'Styling & bloemen',
+    budgetCatEntertainment: 'Entertainment',
+    budgetCatAttire: 'Kleding',
+    budgetCatStationery: 'Papierwerk & uitnodigingen',
+    budgetCatTransport: 'Transport',
+    budgetCatCakeDesserts: 'Taart & desserts',
+    budgetCatFavorsGifts: 'Bedankjes & geschenken',
+    budgetCatBeauty: 'Beauty (hair & make-up)',
+    budgetCatHoneymoon: 'Huwelijksreis',
+    budgetCatMiscBuffer: 'Overig / buffer',
 
     payTitle: 'Betalingen',
     payIntro: 'Registreer elke betaling. Totalen lopen door naar je budget.',
@@ -271,6 +286,77 @@ export const STRINGS = {
     photoConfirmDeleteSection: 'Deze sectie en alle items verwijderen?',
     photoCustomTitleDefault: 'Eigen sectie',
     photoSectionLabel: 'Sectienaam',
+
+    payColDate: 'Datum',
+    payColVendor: 'Leverancier',
+    payColCategory: 'Categorie',
+    payColAmount: 'Bedrag',
+    payColType: 'Type',
+    payColPaidFor: 'Betaald voor',
+    payColReceipt: 'Bon / ref.',
+
+    catStatus_on_track: 'Op schema',
+    catStatus_at_risk: 'Risico',
+    catStatus_over: 'Boven budget',
+
+    payType_cash: 'Contant',
+    payType_card: 'Kaart',
+    payType_transfer: 'Overschrijving',
+    payType_other: 'Anders',
+    payType_unpaid: 'Nog niet betaald',
+
+    guestRsvpOpt_pending: 'Open',
+    guestRsvpOpt_yes: 'Ja',
+    guestRsvpOpt_no: 'Nee',
+
+    guestsColName: 'Naam',
+    guestsColSide: 'Kant',
+    guestsColRsvp: 'RSVP',
+    guestsColMeal: 'Maaltijd',
+    guestsColTable: 'Tafel',
+    guestsAddGuest: 'Gast toevoegen',
+    guestSide_bride: 'Bruid',
+    guestSide_groom: 'Bruidegom',
+
+    tablesAddTable: 'Tafel toevoegen',
+    tablesNewTableName: 'Tafel {n}',
+    tblType_sweetheart: 'Sweetheart',
+    tblType_family: 'Familie',
+    tblType_friends: 'Vrienden',
+    tblType_kids: 'Kinderen',
+    tablesGuestIdsHint: 'Gast-IDs (komma\'s):',
+
+    phVendorCategory: 'Categorie',
+    phVendorName: 'Naam leverancier',
+    phVendorNotes: 'Notities',
+
+    decisionsAddGroup: 'Groep toevoegen',
+    decisionsPhCategory: 'Categorie',
+    decisionsPhTitle: 'Naam beslissing',
+    decisionsPhOptionName: 'Naam optie',
+    decisionsPhPrice: 'Prijs',
+    decisionsOptionNumber: 'Optie {n}',
+    decisionsFinalChoice: 'Eindkeuze',
+    decisionsRemoveGroup: 'Groep verwijderen',
+
+    rsvpEmailPlaceholder: 'naam@voorbeeld.nl',
+    rsvpShareUrlPlaceholder: 'https://…/planner.html#rsvp',
+
+    partyRole_bridesmaid: 'Bruidsmeisje',
+    partyRole_groomsman: 'Bruidegomsmen',
+    partyRole_maidOfHonor: 'Getuige bruid',
+    partyRole_bestMan: 'Getuige bruidegom',
+    partyRole_flowerGirl: 'Bloemenmeisje',
+    partyRole_ringBearer: 'Ringdrager',
+    partyRole_other: 'Anders',
+
+    questionsVenueHeading: 'Locatie / zaal',
+    venueQ1: 'Wat zit er in de huur inbegrepen?',
+    venueQ2: 'Wat is het regen-/weeralternatief?',
+    venueQ3: 'Hoe laat mogen leveranciers komen opbouwen?',
+
+    tabsAriaLabel: 'Hoofdnavigatie',
+    weekendTimePlaceholder: '18:30',
   },
   en: {
     brand: 'Wedding Budget Planner',
@@ -310,6 +396,9 @@ export const STRINGS = {
     currencyLabel: 'Currency',
     langLabel: 'Language',
     themeLabel: 'Color theme',
+    welcomeContinueBtn: 'Continue',
+    welcomeThemesHint:
+      'The palettes below appear neutral first; tap Continue to see them in full color.',
 
     snapshotTitle: 'Snapshot',
     snapshotIntro: 'Your wedding command center — plan with confidence.',
@@ -396,6 +485,19 @@ export const STRINGS = {
     spentNote: 'Spent is filled from Payment Log and cannot be edited here.',
     addCategory: '+ Add budget category',
     addPayment: '+ Add payment',
+
+    budgetCatVenueCatering: 'Venue & Catering',
+    budgetCatPhotoVideo: 'Photo & Video',
+    budgetCatDesignFlorals: 'Design & Florals',
+    budgetCatEntertainment: 'Entertainment',
+    budgetCatAttire: 'Attire',
+    budgetCatStationery: 'Stationery',
+    budgetCatTransport: 'Transport',
+    budgetCatCakeDesserts: 'Cake & Desserts',
+    budgetCatFavorsGifts: 'Favors & Gifts',
+    budgetCatBeauty: 'Beauty',
+    budgetCatHoneymoon: 'Honeymoon',
+    budgetCatMiscBuffer: 'Misc / Buffer',
 
     payTitle: 'Payment Log',
     payIntro: 'Log each payment. Totals flow to your budget.',
@@ -538,6 +640,77 @@ export const STRINGS = {
     photoConfirmDeleteSection: 'Delete this section and all shots?',
     photoCustomTitleDefault: 'Custom section',
     photoSectionLabel: 'Section name',
+
+    payColDate: 'Date',
+    payColVendor: 'Vendor',
+    payColCategory: 'Category',
+    payColAmount: 'Amount',
+    payColType: 'Type',
+    payColPaidFor: 'Paid for',
+    payColReceipt: 'Receipt / ref.',
+
+    catStatus_on_track: 'On track',
+    catStatus_at_risk: 'At risk',
+    catStatus_over: 'Over budget',
+
+    payType_cash: 'Cash',
+    payType_card: 'Card',
+    payType_transfer: 'Bank transfer',
+    payType_other: 'Other',
+    payType_unpaid: 'Unpaid',
+
+    guestRsvpOpt_pending: 'Pending',
+    guestRsvpOpt_yes: 'Yes',
+    guestRsvpOpt_no: 'No',
+
+    guestsColName: 'Name',
+    guestsColSide: 'Side',
+    guestsColRsvp: 'RSVP',
+    guestsColMeal: 'Meal',
+    guestsColTable: 'Table',
+    guestsAddGuest: 'Add guest',
+    guestSide_bride: 'Bride',
+    guestSide_groom: 'Groom',
+
+    tablesAddTable: 'Add table',
+    tablesNewTableName: 'Table {n}',
+    tblType_sweetheart: 'Sweetheart',
+    tblType_family: 'Family',
+    tblType_friends: 'Friends',
+    tblType_kids: 'Kids',
+    tablesGuestIdsHint: 'Guest IDs (comma):',
+
+    phVendorCategory: 'Category',
+    phVendorName: 'Vendor name',
+    phVendorNotes: 'Notes',
+
+    decisionsAddGroup: 'Add group',
+    decisionsPhCategory: 'Category',
+    decisionsPhTitle: 'Decision name',
+    decisionsPhOptionName: 'Option name',
+    decisionsPhPrice: 'Price',
+    decisionsOptionNumber: 'Option {n}',
+    decisionsFinalChoice: 'Final choice',
+    decisionsRemoveGroup: 'Remove group',
+
+    rsvpEmailPlaceholder: 'you@example.com',
+    rsvpShareUrlPlaceholder: 'https://…/planner.html#rsvp',
+
+    partyRole_bridesmaid: 'Bridesmaid',
+    partyRole_groomsman: 'Groomsman',
+    partyRole_maidOfHonor: 'Maid of Honor',
+    partyRole_bestMan: 'Best Man',
+    partyRole_flowerGirl: 'Flower Girl',
+    partyRole_ringBearer: 'Ring Bearer',
+    partyRole_other: 'Other',
+
+    questionsVenueHeading: 'Venue',
+    venueQ1: 'What is included in the rental?',
+    venueQ2: 'What is the backup plan for weather?',
+    venueQ3: 'What time can vendors access / load in?',
+
+    tabsAriaLabel: 'Main tabs',
+    weekendTimePlaceholder: '18:30',
   },
   fr: {
     brand: 'Wedding Budget Planner',
@@ -577,6 +750,9 @@ export const STRINGS = {
     currencyLabel: 'Devise',
     langLabel: 'Langue',
     themeLabel: 'Thème couleur',
+    welcomeContinueBtn: 'Suivant',
+    welcomeThemesHint:
+      'Les palettes ci-dessous sont d’abord neutres ; appuyez sur Suivant pour les voir en couleur.',
 
     snapshotTitle: 'Aperçu',
     snapshotIntro: 'Votre tableau de bord mariage — planifiez sereinement.',
@@ -667,6 +843,19 @@ export const STRINGS = {
       'Les montants dépensés sont remplis depuis Paiements et ne sont pas modifiables ici.',
     addCategory: '+ Ajouter une catégorie',
     addPayment: '+ Ajouter un paiement',
+
+    budgetCatVenueCatering: 'Lieu & traiteur',
+    budgetCatPhotoVideo: 'Photo & vidéo',
+    budgetCatDesignFlorals: 'Design & fleurs',
+    budgetCatEntertainment: 'Animation',
+    budgetCatAttire: 'Tenues',
+    budgetCatStationery: 'Papeterie & invitations',
+    budgetCatTransport: 'Transport',
+    budgetCatCakeDesserts: 'Gâteau & desserts',
+    budgetCatFavorsGifts: 'Cadeaux invités',
+    budgetCatBeauty: 'Beauté (coiffure & maquillage)',
+    budgetCatHoneymoon: 'Lune de miel',
+    budgetCatMiscBuffer: 'Divers / marge',
 
     payTitle: 'Journal des paiements',
     payIntro: 'Enregistrez chaque paiement. Les totaux alimentent votre budget.',
@@ -809,8 +998,131 @@ export const STRINGS = {
     photoConfirmDeleteSection: 'Supprimer cette section et toutes les prises de vue ?',
     photoCustomTitleDefault: 'Section personnalisée',
     photoSectionLabel: 'Nom de la section',
+
+    payColDate: 'Date',
+    payColVendor: 'Prestataire',
+    payColCategory: 'Catégorie',
+    payColAmount: 'Montant',
+    payColType: 'Type',
+    payColPaidFor: 'Payé pour',
+    payColReceipt: 'Reçu / réf.',
+
+    catStatus_on_track: 'Dans les temps',
+    catStatus_at_risk: 'À risque',
+    catStatus_over: 'Au-dessus du budget',
+
+    payType_cash: 'Espèces',
+    payType_card: 'Carte',
+    payType_transfer: 'Virement',
+    payType_other: 'Autre',
+    payType_unpaid: 'Non payé',
+
+    guestRsvpOpt_pending: 'En attente',
+    guestRsvpOpt_yes: 'Oui',
+    guestRsvpOpt_no: 'Non',
+
+    guestsColName: 'Nom',
+    guestsColSide: 'Côté',
+    guestsColRsvp: 'RSVP',
+    guestsColMeal: 'Repas',
+    guestsColTable: 'Table',
+    guestsAddGuest: 'Ajouter un invité',
+    guestSide_bride: 'Mariée',
+    guestSide_groom: 'Marié',
+
+    tablesAddTable: 'Ajouter une table',
+    tablesNewTableName: 'Table {n}',
+    tblType_sweetheart: 'Sweetheart',
+    tblType_family: 'Famille',
+    tblType_friends: 'Amis',
+    tblType_kids: 'Enfants',
+    tablesGuestIdsHint: 'IDs invités (virgules) :',
+
+    phVendorCategory: 'Catégorie',
+    phVendorName: 'Nom du prestataire',
+    phVendorNotes: 'Notes',
+
+    decisionsAddGroup: 'Ajouter un groupe',
+    decisionsPhCategory: 'Catégorie',
+    decisionsPhTitle: 'Nom de la décision',
+    decisionsPhOptionName: 'Nom de l’option',
+    decisionsPhPrice: 'Prix',
+    decisionsOptionNumber: 'Option {n}',
+    decisionsFinalChoice: 'Choix final',
+    decisionsRemoveGroup: 'Supprimer le groupe',
+
+    rsvpEmailPlaceholder: 'vous@exemple.fr',
+    rsvpShareUrlPlaceholder: 'https://…/planner.html#rsvp',
+
+    partyRole_bridesmaid: 'Demoiselle d’honneur',
+    partyRole_groomsman: 'Garçon d’honneur',
+    partyRole_maidOfHonor: 'Témoin mariée',
+    partyRole_bestMan: 'Témoin marié',
+    partyRole_flowerGirl: 'Demoiselle aux fleurs',
+    partyRole_ringBearer: 'Porteur d’alliances',
+    partyRole_other: 'Autre',
+
+    questionsVenueHeading: 'Lieu',
+    venueQ1: 'Qu’est-ce qui est inclus dans la location ?',
+    venueQ2: 'Quel est le plan B en cas de pluie ?',
+    venueQ3: 'À quelle heure les prestataires peuvent-ils accéder ?',
+
+    tabsAriaLabel: 'Navigation principale',
+    weekendTimePlaceholder: '18:30',
   },
 };
+
+const PARTY_ROLE_KEYS = {
+  Bridesmaid: 'partyRole_bridesmaid',
+  Groomsman: 'partyRole_groomsman',
+  'Maid of Honor': 'partyRole_maidOfHonor',
+  'Best Man': 'partyRole_bestMan',
+  'Flower Girl': 'partyRole_flowerGirl',
+  'Ring Bearer': 'partyRole_ringBearer',
+  Other: 'partyRole_other',
+};
+
+/** Display labels for persisted English party role ids */
+export function partyRoleLabel(lang, role) {
+  const key = PARTY_ROLE_KEYS[role];
+  return key ? t(lang, key) : role;
+}
+
+export function tableTypeLabel(lang, code) {
+  return t(lang, `tblType_${code}`);
+}
+
+export function payTypeLabel(lang, code) {
+  return t(lang, `payType_${code}`);
+}
+
+export function guestRsvpOptLabel(lang, code) {
+  return t(lang, `guestRsvpOpt_${code}`);
+}
+
+export function catStatusLabel(lang, code) {
+  return t(lang, `catStatus_${code}`);
+}
+
+/** Stable keys → translated row titles for default budget categories (same order as seeds). */
+export const BUDGET_CATEGORY_KEYS = [
+  'budgetCatVenueCatering',
+  'budgetCatPhotoVideo',
+  'budgetCatDesignFlorals',
+  'budgetCatEntertainment',
+  'budgetCatAttire',
+  'budgetCatStationery',
+  'budgetCatTransport',
+  'budgetCatCakeDesserts',
+  'budgetCatFavorsGifts',
+  'budgetCatBeauty',
+  'budgetCatHoneymoon',
+  'budgetCatMiscBuffer',
+];
+
+export function budgetCategoryNamesForLang(lang) {
+  return BUDGET_CATEGORY_KEYS.map((k) => t(lang, k));
+}
 
 export const TAB_ORDER = [
   'welcome',

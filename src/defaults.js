@@ -1,5 +1,7 @@
 /** Default seed data — aligned with wedding planner spec */
 
+import { budgetCategoryNamesForLang } from './i18n.js';
+
 export const STORAGE_KEY = 'aifora-wedding-planner-v1';
 
 /** Six studio palettes — swatches left→right for picker cards */
@@ -73,7 +75,8 @@ export const LEGACY_THEME_MAP = {
   linen: 'linen_ledger',
 };
 
-export const DEFAULT_CATEGORIES = [
+/** Legacy English titles from first app versions — used only to migrate old saves to the active language */
+export const LEGACY_ENGLISH_BUDGET_CATEGORIES = [
   'Venue & Catering',
   'Photo & Video',
   'Design & Florals',
@@ -87,6 +90,23 @@ export const DEFAULT_CATEGORIES = [
   'Honeymoon',
   'Misc/Buffer',
 ];
+
+/** Rewrites still-English default category rows + payment links to match current UI language */
+export function migrateBudgetLabelsFromLegacy(categories, payments, lang) {
+  const targets = budgetCategoryNamesForLang(lang);
+  const migratedCats = categories.map((c, i) => {
+    if (i < LEGACY_ENGLISH_BUDGET_CATEGORIES.length && c.name === LEGACY_ENGLISH_BUDGET_CATEGORIES[i]) {
+      return { ...c, name: targets[i] };
+    }
+    return c;
+  });
+  const migratedPay = (payments || []).map((p) => {
+    const idx = LEGACY_ENGLISH_BUDGET_CATEGORIES.indexOf(p.categoryName);
+    if (idx !== -1) return { ...p, categoryName: targets[idx] };
+    return p;
+  });
+  return { categories: migratedCats, payments: migratedPay };
+}
 
 export const PAYMENT_TYPES = ['cash', 'card', 'transfer', 'other', 'unpaid'];
 
@@ -317,9 +337,10 @@ export const DEFAULT_MILESTONES = [
   tasks: phase.tasks.map((label) => ({ id: uid('mst'), label, done: false })),
 }));
 
-export function createInitialState() {
+export function createInitialState(lang = 'nl') {
+  const categoryNames = budgetCategoryNamesForLang(lang);
   return {
-    lang: 'nl',
+    lang,
     textDir: 'ltr',
     coupleNames: '',
     weddingDate: '',
@@ -331,7 +352,7 @@ export function createInitialState() {
     guestCount: '',
     currency: 'EUR',
     themeId: 'ivory_silk',
-    categories: DEFAULT_CATEGORIES.map((name) => ({
+    categories: categoryNames.map((name) => ({
       id: uid('cat'),
       name,
       budgeted: 0,
